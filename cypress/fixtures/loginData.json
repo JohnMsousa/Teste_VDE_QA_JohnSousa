@@ -1,0 +1,8 @@
+{
+  "validEmail": "usuario.valido@exemplo.com",
+  "invalidEmail": "email-invalido",
+  "emptyEmail": "",
+  "emailWithoutAt": "email-sem-arroba.com",
+  "emailWithoutDomain": "email@"
+}
+

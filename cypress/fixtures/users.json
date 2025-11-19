@@ -1,0 +1,19 @@
+{
+  "validUser": {
+    "email": "usuario.valido@exemplo.com",
+    "password": "senha123"
+  },
+  "invalidUser": {
+    "email": "usuario.invalido@exemplo.com",
+    "password": "senha_errada"
+  },
+  "invalidEmail": {
+    "email": "email-sem-arroba",
+    "password": ""
+  },
+  "emptyEmail": {
+    "email": "",
+    "password": ""
+  }
+}
+

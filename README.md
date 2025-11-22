@@ -43,31 +43,6 @@ login() {
 
     // ... resto do código
 }
-```
-
-⚠️ **Atenção:** Nunca faça commit de credenciais reais no repositório. Use variáveis de ambiente ou arquivos de configuração locais (não versionados).
-
-### 🔒 Configurar GitHub Secrets (Para CI/CD)
-
-Para que os testes sejam executados no GitHub Actions e o relatório seja gerado automaticamente, é necessário configurar os **GitHub Secrets** com as credenciais de login.
-
-**Como configurar:**
-
-1. Acesse o repositório no GitHub
-2. Vá em **Settings → Secrets and variables → Actions**
-3. Clique em **"New repository secret"**
-4. Adicione os seguintes secrets:
-
-    - **Nome:** `TEST_USER`
-
-        - **Valor:** Seu email válido para login
-
-    - **Nome:** `TEST_PASSWORD`
-        - **Valor:** Sua senha válida para login
-
-5. Clique em **"Add secret"** para cada um
-
----
 
 ## 🏗️ Estrutura do Projeto
 
@@ -187,7 +162,7 @@ O relatório será gerado em: `mochawesome-html/mochawesome.html`
 
 O workflow executa automaticamente em push/PR na `main`, schedule diário (06:00 UTC) e manualmente. Executa os testes, gera o relatório Mochawesome e publica no GitHub Pages.
 
-⚠️ **Requisito:** Configure os GitHub Secrets (`TEST_USER` e `TEST_PASSWORD`) conforme a seção [Configuração Inicial](#-configuração-inicial).
+⚠️ **Requisito:** Configure os GitHub Secrets (`TEST_USER` e `TEST_PASSWORD`)
 
 ### Publicar Relatório no GitHub Pages
 

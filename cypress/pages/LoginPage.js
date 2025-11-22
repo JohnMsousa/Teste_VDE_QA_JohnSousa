@@ -12,8 +12,8 @@ export class LoginPage extends BasePage {
 
         cy.get("[type='email']").type(email);
         cy.contains("button", "Próximo").click();
-        cy.get("[type='password']").type(password);
-        cy.contains("button", "Entrar").click();
+        cy.get("[type='password']", { timeout: 10000 }).should("be.visible").type(password);
+        cy.contains("button", "Entrar").should("be.visible").click();
 
         return this;
     }

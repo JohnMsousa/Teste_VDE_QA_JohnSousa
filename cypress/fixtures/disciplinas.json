@@ -1,0 +1,25 @@
+{
+  "disciplinas": [
+    {
+      "nome": "Administrativo",
+      "descricao": "Direito Administrativo",
+      "esperado": "Administrativo"
+    },
+    {
+      "nome": "Constitucional",
+      "descricao": "Direito Constitucional",
+      "esperado": "Constitucional"
+    },
+    {
+      "nome": "Tributário",
+      "descricao": "Direito Tributário",
+      "esperado": "Tributário"
+    },
+    {
+      "nome": "Penal",
+      "descricao": "Direito Penal",
+      "esperado": "Penal"
+    }
+  ]
+}
+

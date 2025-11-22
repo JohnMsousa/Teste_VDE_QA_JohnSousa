@@ -1,34 +1,62 @@
 import { BasePage } from "./BasePage";
 
-/**
- * LoginPage - Page Object para a página de login
- * Página: https://betaconcursos.metodovde.com.br/entrar
- */
 export class LoginPage extends BasePage {
-    /**
-     * Visita a página de login
-     */
     visit() {
         cy.visit("https://betaconcursos.metodovde.com.br/entrar");
         return this;
     }
 
-    /**
-     * Realiza o login completo com credenciais padrão
-     * Método reutilizável para outros testes
-     */
     login() {
         const email = "johnmsousasantos@gmail.com";
         const password = "VDE@Concursos";
 
         cy.get("[type='email']").type(email);
-        cy.get('button[type="submit"]').click();
+        cy.contains("button", "Próximo").click();
         cy.get("[type='password']").type(password);
-        cy.get('button[type="submit"]').click();
+        cy.contains("button", "Entrar").click();
 
+        return this;
+    }
+
+    preencherEmail(email) {
+        cy.get("[type='email']").type(email);
+        return this;
+    }
+
+    clicarProximo() {
+        cy.contains("button", "Próximo").click();
+        return this;
+    }
+
+    preencherSenha(senha) {
+        cy.get("[type='password']").type(senha);
+        return this;
+    }
+
+    clicarEntrar() {
+        cy.contains("button", "Entrar").click();
+        return this;
+    }
+
+    verificarMensagemSenhaIncorreta() {
+        cy.contains("senha incorreta.").should("be.visible");
+        return this;
+    }
+
+    verificarMensagemEmailInvalido() {
+        cy.contains("Insira um email válido!").should("be.visible");
+        return this;
+    }
+
+    verificarMensagemEmailNaoCadastrado() {
+        cy.contains("Email não cadastrado!").should("be.visible");
+        return this;
+    }
+
+    verificarMensagemCampoVazio() {
+        cy.contains("O campo de e-mail está vazio!").should("be.visible");
         return this;
     }
 }
 
-// Exportação da classe e instância padrão para facilitar o uso
 export default new LoginPage();

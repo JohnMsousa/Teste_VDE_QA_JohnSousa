@@ -1,13 +1,13 @@
 # Projeto de Testes Automatizados - Cypress
 
-Projeto de testes end-to-end (E2E) utilizando Cypress seguindo o padrão **Page Objects**.
+Projeto de testes end-to-end (E2E) utilizando Cypress seguindo o padrão **Page Objects** com testes data-driven.
 
 **URL da aplicação:** https://betaconcursos.metodovde.com.br/entrar
 
 ## 📋 Pré-requisitos
 
--   Node.js (versão 14 ou superior)
--   npm ou yarn
+- Node.js (versão 14 ou superior)
+- npm ou yarn
 
 ## 🚀 Instalação
 
@@ -24,16 +24,23 @@ npm install
 .
 ├── cypress/
 │   ├── e2e/                    # Testes end-to-end
-│   │   ├── example.cy.js      # Exemplo de teste
-│   │   └── login.cy.js        # Testes da página de login
+│   │   ├── Login/             # Testes de login
+│   │   ├── Cronograma/         # Testes de cronograma
+│   │   └── Questões/          # Testes de questões
+│   │       ├── 01-reponder-questao.cy.js
+│   │       ├── 02-filtrar-questao.cy.js
+│   │       └── 03-filtrar-questoes-data-driven.cy.js  # Teste data-driven
 │   ├── fixtures/              # Dados de teste (JSON, etc)
 │   │   ├── example.json
+│   │   ├── loginData.json     # Dados para testes de login
 │   │   ├── users.json         # Dados de usuários para testes
-│   │   └── loginData.json     # Dados para testes de login
+│   │   └── disciplinas.json  # Dados para testes data-driven
 │   ├── pages/                 # Page Objects
 │   │   ├── BasePage.js        # Classe base com métodos comuns
 │   │   ├── HomePage.js        # Page Object da página inicial
-│   │   └── LoginPage.js       # Page Object da página de login
+│   │   ├── LoginPage.js       # Page Object da página de login
+│   │   ├── CronogramaPage.js  # Page Object da página de cronograma
+│   │   └── QuestoesPage.js    # Page Object da página de questões
 │   ├── support/               # Arquivos de suporte
 │   │   ├── commands.js        # Comandos customizados
 │   │   └── e2e.js             # Configurações globais
@@ -48,25 +55,23 @@ npm install
 
 O projeto utiliza o padrão **Page Objects** para organizar os testes:
 
--   **BasePage**: Classe base com métodos comuns reutilizáveis
--   **Page Objects específicos**: Cada página da aplicação tem sua própria classe
--   **Encapsulamento**: Seletores e ações são encapsulados nas classes
+- **BasePage**: Classe base com métodos comuns reutilizáveis
+- **Page Objects específicos**: Cada página/funcionalidade tem sua própria classe
+- **Encapsulamento**: Seletores e ações são encapsulados nas classes
+- **Reutilização**: Métodos podem ser reutilizados em múltiplos testes
 
 ### Exemplo de uso:
 
 ```javascript
-import { HomePage } from "../pages/HomePage";
-import { LoginPage } from "../pages/LoginPage";
+import LoginPage from "../pages/LoginPage";
+import QuestoesPage from "../pages/QuestoesPage";
 
-describe("Meus Testes", () => {
-    const homePage = new HomePage();
-    const loginPage = new LoginPage();
-
-    it("Deve fazer login", () => {
-        homePage.visit();
-        homePage.clickLoginButton();
-        loginPage.login("usuario", "senha");
-    });
+it("Deve filtrar questões", () => {
+    LoginPage.visit();
+    LoginPage.login();
+    QuestoesPage.navegarParaQuestoes();
+    QuestoesPage.filtrarPorDisciplina("Administrativo");
+    QuestoesPage.verificarResultadosFiltro("Administrativo");
 });
 ```
 
@@ -92,14 +97,51 @@ npm run cy:run:firefox
 npm run cy:run:edge
 ```
 
+### Executar testes específicos:
+
+```bash
+# Executar apenas testes de questões
+npx cypress run --spec "cypress/e2e/Questões/**/*.cy.js"
+
+# Executar apenas testes de cronograma
+npx cypress run --spec "cypress/e2e/Cronograma/**/*.cy.js"
+
+# Executar um arquivo específico
+npx cypress run --spec "cypress/e2e/Questões/03-filtrar-questoes-data-driven.cy.js"
+```
+
+
+## 📊 Testes Data-Driven
+
+O projeto inclui testes data-driven que executam o mesmo cenário com múltiplos dados de entrada, reduzindo duplicação de código e facilitando manutenção.
+
+**Exemplo:** `03-filtrar-questoes-data-driven.cy.js`
+
+Este teste valida o filtro de questões utilizando diferentes disciplinas:
+
+```javascript
+const disciplinas = [
+    { nome: "Administrativo", esperado: "Administrativo" },
+    { nome: "Constitucional", esperado: "Constitucional" },
+    { nome: "Tributário", esperado: "Tributário" }
+];
+
+disciplinas.forEach((disciplina) => {
+    it(`deve filtrar questões por disciplina: ${disciplina.nome}`, () => {
+        QuestoesPage.filtrarPorDisciplina(disciplina.nome);
+        QuestoesPage.verificarResultadosFiltro(disciplina.esperado);
+    });
+});
+```
+
 ## ⚙️ Configuração
 
 O arquivo `cypress.config.js` está configurado com:
 
--   `baseUrl`: https://betaconcursos.metodovde.com.br
--   `viewportWidth`: 1280px
--   `viewportHeight`: 720px
--   `defaultCommandTimeout`: 10000ms
+- `baseUrl`: https://betaconcursos.metodovde.com.br
+- `viewportWidth`: 1280px
+- `viewportHeight`: 720px
+- `defaultCommandTimeout`: 10000ms
 
 Para ajustar outras configurações, edite o arquivo `cypress.config.js`.
 
@@ -109,28 +151,6 @@ Para ajustar outras configurações, edite o arquivo `cypress.config.js`.
 2. Crie o arquivo de teste em `cypress/e2e/` com extensão `.cy.js`
 3. Importe as Page Objects necessárias
 4. Escreva os testes seguindo o padrão Page Objects
-
-### Exemplo de nova Page Object:
-
-```javascript
-import { BasePage } from "./BasePage";
-
-export class MinhaPage extends BasePage {
-    elements = {
-        meuBotao: '[data-testid="meu-botao"]',
-    };
-
-    visit() {
-        super.visit("/minha-rota");
-        return this;
-    }
-
-    clicarBotao() {
-        this.click(this.elements.meuBotao);
-        return this;
-    }
-}
-```
 
 ## 🔧 Comandos Customizados
 
@@ -144,16 +164,24 @@ Cypress.Commands.add("meuComando", (parametro) => {
 
 ## 📚 Boas Práticas
 
-1. **Use Page Objects**: Sempre encapsule seletores e ações em Page Objects
-2. **Seletores**: Prefira `data-testid` para seletores estáveis
-3. **Asserções**: Use asserções claras e específicas
-4. **Organização**: Mantenha os testes organizados e legíveis
-5. **Reutilização**: Aproveite a classe BasePage para métodos comuns
-6. **Nomenclatura**: Use nomes descritivos para testes e métodos
+1. Use Page Objects para encapsular seletores e ações
+2. Prefira `data-testid` para seletores estáveis
+3. Use asserções claras e específicas
+4. Mantenha os testes organizados e legíveis
+5. Utilize testes data-driven para validar múltiplos cenários
+6. Sempre limpe dados criados nos testes
 
 ## 📦 Dependências
 
--   **cypress**: Framework de testes E2E
+- **cypress**: ^14.5.4 - Framework de testes E2E
+
+## 🐛 Troubleshooting
+
+### Problemas comuns:
+
+1. **Testes falhando por timeout**: Aumente o `defaultCommandTimeout` no `cypress.config.js`
+2. **Elementos não encontrados**: Verifique se os seletores estão corretos e se há elementos dinâmicos
+3. **Problemas de login**: Verifique se as credenciais estão corretas no `LoginPage.js`
 
 ## 👤 Autor
 

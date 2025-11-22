@@ -1,14 +1,6 @@
 import { BasePage } from "./BasePage";
 
-/**
- * CronogramaPage - Page Object para a página de cronograma
- */
 export class CronogramaPage extends BasePage {
-    /**
-     * Clica no botão "Mais" de um dia específico
-     * @param {string} dia - Nome do dia (ex: "Segunda", "Terça", etc.)
-     * @param {number} vezes - Quantidade de cliques (padrão: 4)
-     */
     clicarMaisNoDia(dia, vezes = 4) {
         cy.contains("p", dia)
             .parents("div.flex.flex-col.gap-2")
@@ -17,6 +9,14 @@ export class CronogramaPage extends BasePage {
                     cy.get("button").eq(2).click();
                 }
             });
+        return this;
+    }
+
+    excluirCronograma() {
+        cy.get(".h-4.lucide.lucide-trash2").click();
+        cy.get(".cursor-pointer.font-medium.text-gray-600").click();
+        cy.contains("button", "Excluir").click();
+        cy.contains("button", "Excluir").click();
         return this;
     }
 }

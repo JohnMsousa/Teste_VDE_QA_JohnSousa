@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-yarn.lock
 
 # Cypress
 cypress/videos/
@@ -12,26 +11,3 @@ cypress/reports/
 mochawesome-report/
 mochawesome-html/
 mochawesome.json
-
-# OS
-.DS_Store
-Thumbs.db
-*.stackdump
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Environment variables
-.env
-.env.local
-

@@ -7,8 +7,11 @@ export class LoginPage extends BasePage {
     }
 
     login() {
-        const email = "johnmsousasantos@gmail.com";
-        const password = "VDE@Concursos";
+        // ⚠️ IMPORTANTE: Adicione suas credenciais válidas aqui antes de executar os testes
+        // Para CI/CD, use GitHub Secrets: TEST_USER e TEST_PASSWORD
+        // As variáveis são passadas via --env no workflow do GitHub Actions
+        const email = Cypress.env("TEST_USER") || "SEU_EMAIL_AQUI@exemplo.com";
+        const password = Cypress.env("TEST_PASSWORD") || "SUA_SENHA_AQUI";
 
         cy.get("[type='email']").type(email);
         cy.contains("button", "Próximo").click();

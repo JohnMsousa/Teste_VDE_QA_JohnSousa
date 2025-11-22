@@ -4,10 +4,14 @@ Projeto de testes end-to-end (E2E) utilizando Cypress seguindo o padrão **Page 
 
 **URL da aplicação:** https://betaconcursos.metodovde.com.br/entrar
 
+---
+
 ## 📋 Pré-requisitos
 
 -   Node.js (versão 14 ou superior)
 -   npm ou yarn
+
+---
 
 ## 🚀 Instalação
 
@@ -18,6 +22,66 @@ Projeto de testes end-to-end (E2E) utilizando Cypress seguindo o padrão **Page 
 npm install
 ```
 
+---
+
+## ⚙️ Configuração Inicial
+
+### 🔐 Configurar Credenciais de Login
+
+**IMPORTANTE:** Antes de executar os testes, você precisa configurar suas credenciais válidas.
+
+1. Abra o arquivo `cypress/pages/LoginPage.js`
+2. Localize o método `login()` (linha 9)
+3. Substitua os valores:
+    - `SEU_EMAIL_AQUI@exemplo.com` → seu email válido
+    - `SUA_SENHA_AQUI` → sua senha válida
+
+```javascript
+login() {
+    const email = "seu-email@exemplo.com";  // ← Adicione seu email aqui
+    const password = "sua-senha";           // ← Adicione sua senha aqui
+
+    // ... resto do código
+}
+```
+
+⚠️ **Atenção:** Nunca faça commit de credenciais reais no repositório. Use variáveis de ambiente ou arquivos de configuração locais (não versionados).
+
+### 🔒 Configurar GitHub Secrets (Para CI/CD)
+
+Para que os testes sejam executados no GitHub Actions e o relatório seja gerado automaticamente, é necessário configurar os **GitHub Secrets** com as credenciais de login.
+
+**Como configurar:**
+
+1. Acesse o repositório no GitHub
+2. Vá em **Settings → Secrets and variables → Actions**
+3. Clique em **"New repository secret"**
+4. Adicione os seguintes secrets:
+
+    - **Nome:** `TEST_USER`
+
+        - **Valor:** Seu email válido para login
+
+    - **Nome:** `TEST_PASSWORD`
+        - **Valor:** Sua senha válida para login
+
+5. Clique em **"Add secret"** para cada um
+
+**Como funciona:**
+
+-   O `LoginPage.js` está configurado para usar variáveis de ambiente quando disponíveis
+-   No ambiente local, use os valores padrão no código
+-   No GitHub Actions, os secrets são automaticamente injetados como variáveis de ambiente
+-   Isso garante que as credenciais nunca sejam expostas no código ou nos logs
+
+```javascript
+// LoginPage.js usa automaticamente os secrets quando disponíveis
+const email = Cypress.env("TEST_USER") || "SEU_EMAIL_AQUI@exemplo.com";
+const password = Cypress.env("TEST_PASSWORD") || "SUA_SENHA_AQUI";
+```
+
+---
+
 ## 🏗️ Estrutura do Projeto
 
 ```
@@ -25,11 +89,14 @@ npm install
 ├── cypress/
 │   ├── e2e/                    # Testes end-to-end
 │   │   ├── Login/             # Testes de login
+│   │   │   └── 01-login.cy.js
 │   │   ├── Cronograma/         # Testes de cronograma
+│   │   │   ├── cronograma-base.cy.js
+│   │   │   └── cronograma-personalizado.cy.js
 │   │   └── Questões/          # Testes de questões
 │   │       ├── 01-reponder-questao.cy.js
 │   │       └── 02-filtrar-questao.cy.js
-│   ├── fixtures/              # Dados de teste (JSON, etc)
+│   ├── fixtures/              # Dados de teste (JSON)
 │   │   ├── example.json
 │   │   ├── loginData.json     # Dados para testes de login
 │   │   ├── users.json         # Dados de usuários para testes
@@ -44,11 +111,14 @@ npm install
 │   │   ├── commands.js        # Comandos customizados
 │   │   └── e2e.js             # Configurações globais
 │   ├── screenshots/           # Screenshots de falhas (gerado automaticamente)
-│   └── videos/                # Vídeos dos testes (gerado automaticamente)
+│   ├── videos/                # Vídeos dos testes (gerado automaticamente)
+│   └── reports/               # Relatórios gerados
 ├── cypress.config.js          # Configuração do Cypress
 ├── package.json
 └── README.md
 ```
+
+---
 
 ## 🎯 Padrão Page Objects
 
@@ -74,29 +144,27 @@ it("Deve filtrar questões", () => {
 });
 ```
 
+---
+
 ## 🧪 Executando os Testes
 
-### Abrir o Cypress Test Runner (modo interativo):
+### Modo Interativo (Recomendado para desenvolvimento)
+
+Abre o Cypress Test Runner com interface gráfica:
 
 ```bash
 npm run cy:open
 ```
 
-### Executar todos os testes (modo headless):
+### Modo Headless (Execução rápida)
+
+Executa todos os testes sem interface gráfica:
 
 ```bash
-npm run cy:run
+npm run cy:run:chrome    # Chrome
 ```
 
-### Executar em navegador específico:
-
-```bash
-npm run cy:run:chrome
-npm run cy:run:firefox
-npm run cy:run:edge
-```
-
-### Executar testes específicos:
+### Executar Testes Específicos
 
 ```bash
 # Executar apenas testes de questões
@@ -105,56 +173,88 @@ npx cypress run --spec "cypress/e2e/Questões/**/*.cy.js"
 # Executar apenas testes de cronograma
 npx cypress run --spec "cypress/e2e/Cronograma/**/*.cy.js"
 
+# Executar apenas testes de login
+npx cypress run --spec "cypress/e2e/Login/**/*.cy.js"
+
 # Executar um arquivo específico
 npx cypress run --spec "cypress/e2e/Questões/02-filtrar-questao.cy.js"
 ```
 
-### Gerar relatório com Mochawesome:
+---
+
+## 📊 Gerar Relatório de Testes
+
+### Relatório com Mochawesome
+
+Gera um relatório HTML completo com estatísticas e detalhes dos testes:
 
 ```bash
 npm run cy:report
 ```
 
-Este comando executa todos os testes e gera um relatório HTML completo em `mochawesome-html/mochawesome.html` com:
+O relatório será gerado em: `mochawesome-html/mochawesome.html`
 
--   Estatísticas de execução
--   Detalhes de cada teste
--   Screenshots de falhas
--   Tempo de execução
--   Status de cada teste
+O relatório inclui:
 
-### Publicar relatório no GitHub Pages:
+-   ✅ Estatísticas de execução
+-   📝 Detalhes de cada teste
+-   📸 Screenshots de falhas
+-   ⏱️ Tempo de execução
+-   📈 Status de cada teste
 
-O workflow do GitHub Actions executa automaticamente quando há:
+---
 
--   Push na branch `main`
--   Pull requests para a branch `main`
--   Schedule diário às 06:00 UTC
--   Execução manual (workflow_dispatch)
--   Executa todos os testes
--   Gera o relatório Mochawesome
--   Publica automaticamente no GitHub Pages
+## 🔄 CI/CD - GitHub Actions
+
+O projeto possui um workflow do GitHub Actions que:
+
+-   ✅ Executa automaticamente em:
+    -   Push na branch `main`
+    -   Pull requests para a branch `main`
+    -   Schedule diário às 06:00 UTC
+    -   Execução manual (workflow_dispatch)
+-   ✅ Executa todos os testes
+-   ✅ Gera o relatório Mochawesome
+-   ✅ Publica automaticamente no GitHub Pages
+
+⚠️ **Requisito:** Para que os testes sejam executados corretamente no CI/CD, é necessário configurar os **GitHub Secrets** (`TEST_USER` e `TEST_PASSWORD`) conforme descrito na seção [Configuração Inicial](#-configuração-inicial). Sem essas credenciais, os testes de login falharão e o relatório não será gerado corretamente.
+
+### Publicar Relatório no GitHub Pages
+
+**Para ativar:**
+
+1. Vá em **Settings → Pages** no repositório
+2. Selecione **"Deploy from a branch"** → Branch: `gh-pages` → Root: `/ (root)`
+3. O workflow publica automaticamente na branch `gh-pages` após cada execução
 
 O relatório estará disponível em:
 `https://johnmsousa.github.io/Teste_VDE_QA_JohnSousa/`
 
-**Para ativar:**
+---
 
-1. Vá em Settings → Pages no repositório
-2. Selecione "Deploy from a branch" → Branch: `gh-pages` → Root: `/ (root)`
-3. O workflow publica automaticamente na branch `gh-pages` após cada execução
+## 📝 Testes Disponíveis
 
-## 📊 Testes
+O projeto inclui testes para as seguintes funcionalidades:
 
-O projeto inclui testes para diferentes funcionalidades:
+### 🔐 Login
 
--   **Login**: Autenticação na aplicação
--   **Questões**: Responder e filtrar questões
--   **Cronograma**: Criar cronogramas base e personalizados
+-   Autenticação na aplicação
+-   Validação de campos
+-   Mensagens de erro
 
-Os testes utilizam o padrão **Page Objects** para melhor organização e manutenibilidade.
+### 📚 Questões
 
-## ⚙️ Configuração
+-   Responder questões
+-   Filtrar questões por disciplina (teste data-driven)
+
+### 📅 Cronograma
+
+-   Criar cronograma base
+-   Criar cronograma personalizado
+
+---
+
+## ⚙️ Configuração do Cypress
 
 O arquivo `cypress.config.js` está configurado com:
 
@@ -162,15 +262,41 @@ O arquivo `cypress.config.js` está configurado com:
 -   `viewportWidth`: 1280px
 -   `viewportHeight`: 720px
 -   `defaultCommandTimeout`: 10000ms
+-   `video`: false (vídeos desabilitados)
+-   `screenshotOnRunFailure`: true (screenshots automáticos em falhas)
 
 Para ajustar outras configurações, edite o arquivo `cypress.config.js`.
 
+---
+
 ## 📝 Criando Novos Testes
 
-1. Crie uma nova Page Object em `cypress/pages/` se necessário
-2. Crie o arquivo de teste em `cypress/e2e/` com extensão `.cy.js`
-3. Importe as Page Objects necessárias
-4. Escreva os testes seguindo o padrão Page Objects
+1. **Crie uma nova Page Object** em `cypress/pages/` se necessário
+2. **Crie o arquivo de teste** em `cypress/e2e/` com extensão `.cy.js`
+3. **Importe as Page Objects** necessárias
+4. **Escreva os testes** seguindo o padrão Page Objects
+
+### Exemplo de estrutura de teste:
+
+```javascript
+import LoginPage from "../pages/LoginPage";
+import NovaPage from "../pages/NovaPage";
+
+describe("Nova Funcionalidade", () => {
+    beforeEach(() => {
+        LoginPage.visit();
+        LoginPage.login();
+    });
+
+    it("Deve realizar ação X", () => {
+        NovaPage.navegar();
+        NovaPage.realizarAcao();
+        NovaPage.verificarResultado();
+    });
+});
+```
+
+---
 
 ## 🔧 Comandos Customizados
 
@@ -182,27 +308,56 @@ Cypress.Commands.add("meuComando", (parametro) => {
 });
 ```
 
+---
+
 ## 📚 Boas Práticas
 
-1. Use Page Objects para encapsular seletores e ações
-2. Prefira `data-testid` para seletores estáveis
-3. Use asserções claras e específicas
-4. Mantenha os testes organizados e legíveis
-5. Utilize testes data-driven para validar múltiplos cenários
-6. Sempre limpe dados criados nos testes
+1. ✅ Use Page Objects para encapsular seletores e ações
+2. ✅ Prefira `data-testid` para seletores estáveis (quando disponível no sistema)
+    - **Nota:** Neste projeto, foi necessário usar outros seletores (atributos HTML, classes CSS, etc.) devido à ausência de `data-testid` no sistema testado
+3. ✅ Use asserções claras e específicas
+4. ✅ Mantenha os testes organizados e legíveis
+5. ✅ Utilize testes data-driven para validar múltiplos cenários
+6. ✅ Sempre limpe dados criados nos testes
+7. ✅ Nunca faça commit de credenciais reais
+
+---
 
 ## 📦 Dependências
 
 -   **cypress**: ^14.5.4 - Framework de testes E2E
+-   **mochawesome**: ^7.1.4 - Gerador de relatórios
+-   **mochawesome-merge**: ^4.4.1 - Merge de relatórios
+-   **mochawesome-report-generator**: ^6.3.2 - Gerador HTML de relatórios
+
+---
 
 ## 🐛 Troubleshooting
 
-### Problemas comuns:
+### Problemas Comuns
 
-1. **Testes falhando por timeout**: Aumente o `defaultCommandTimeout` no `cypress.config.js`
-2. **Elementos não encontrados**: Verifique se os seletores estão corretos e se há elementos dinâmicos
-3. **Problemas de login**: Verifique se as credenciais estão corretas no `LoginPage.js`
+1. **Testes falhando por timeout**
+
+    - Solução: Aumente o `defaultCommandTimeout` no `cypress.config.js`
+
+2. **Elementos não encontrados**
+
+    - Verifique se os seletores estão corretos
+    - Verifique se há elementos dinâmicos que precisam de wait
+
+3. **Problemas de login**
+
+    - Verifique se as credenciais estão configuradas corretamente no `LoginPage.js`
+    - Confirme se o email e senha são válidos na aplicação
+
+4. **Erro ao executar testes**
+    - Verifique se todas as dependências foram instaladas: `npm install`
+    - Verifique se o Node.js está na versão 14 ou superior
+
+---
 
 ## 👤 Autor
 
-John Sousa - Teste Técnico QA Pleno
+**John Sousa** - Teste Técnico QA Pleno
+
+---

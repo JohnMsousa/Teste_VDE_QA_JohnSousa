@@ -5,15 +5,13 @@ on:
         branches:
             - main
     schedule:
-        - cron: "0 9 * * *" # 06:00 da manhã horário de Brasília
+        - cron: "0 6 * * *" # todos os dias às 06:00
     workflow_dispatch:
 
 jobs:
     cypress-tests:
         name: Run Cypress and Publish Report
         runs-on: ubuntu-latest
-        permissions:
-            contents: write
 
         steps:
             - name: Checkout Repository
@@ -22,35 +20,22 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: "latest"
-                  cache: "npm"
+                  node-version: "22"
 
             - name: Install dependencies
-              run: npm ci
+              run: npm install
 
-            # Executa com CHROME e gera JSON para Mochawesome
-            - name: Run Cypress tests (Chrome)
-              run: |
-                  npx cypress run --browser chrome \
-                    --reporter mochawesome \
-                    --reporter-options reportDir=mochawesome-report,overwrite=false,html=false,json=true || true
-              continue-on-error: true
+            - name: Run Cypress tests with Chrome
+              run: npx cypress run --browser chrome
 
-            # Gerar HTML a partir do JSON
             - name: Generate HTML Report
               run: |
-                  mkdir -p mochawesome-html
-
-                  # Merge JSONs
                   npx mochawesome-merge mochawesome-report/*.json > mochawesome.json
-
-                  # Gerar HTML
                   npx mochawesome-report-generator mochawesome.json -o mochawesome-html
 
-                  # Renomear para index.html
-                  mv mochawesome-html/mochawesome.html mochawesome-html/index.html || true
+            - name: Rename report to index.html
+              run: mv mochawesome-html/mochawesome.html mochawesome-html/index.html
 
-            # Deploy GitHub Pages
             - name: Deploy GitHub Pages
               if: always()
               uses: peaceiris/actions-gh-pages@v4

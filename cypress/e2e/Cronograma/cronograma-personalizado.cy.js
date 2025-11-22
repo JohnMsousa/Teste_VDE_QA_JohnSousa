@@ -23,13 +23,10 @@ describe("Cronograma Personalizado", () => {
         cy.contains("Estamos gerando o seu cronograma...", { timeout: 30000 })
             .should("be.visible")
             .then(() => {
-                cy.contains("Estamos gerando o seu cronograma...", { timeout: 30000 })
-                    .should("not.exist");
+                cy.contains("Estamos gerando o seu cronograma...", { timeout: 30000 }).should("not.exist");
             });
 
-        cy.contains("Cronograma personalizado gerado!")
-            .should("be.visible")
-            .and("exist");
+        cy.contains("Cronograma personalizado gerado!").should("be.visible").and("exist");
 
         CronogramaPage.excluirCronograma();
     });
@@ -51,15 +48,11 @@ describe("Cronograma Personalizado", () => {
         cy.contains("Estamos gerando o seu cronograma...", { timeout: 30000 })
             .should("be.visible")
             .then(() => {
-                cy.contains("Estamos gerando o seu cronograma...", { timeout: 30000 })
-                    .should("not.exist");
+                cy.contains("Estamos gerando o seu cronograma...", { timeout: 30000 }).should("not.exist");
             });
 
-        cy.contains("Cronograma personalizado gerado!")
-            .should("be.visible")
-            .and("exist");
+        cy.contains("Cronograma personalizado gerado!").should("be.visible").and("exist");
 
         CronogramaPage.excluirCronograma();
     });
 });
-

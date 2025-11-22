@@ -24,49 +24,6 @@ npm install
 
 ---
 
-## ⚙️ Configuração Inicial
-
-### 🔐 Configurar Credenciais de Login
-
-**IMPORTANTE:** Antes de executar os testes, você precisa configurar suas credenciais válidas.
-
-1. Abra o arquivo `cypress/pages/LoginPage.js`
-2. Localize o método `login()` (linha 9)
-3. Substitua os valores:
-    - `SEU_EMAIL_AQUI@exemplo.com` → seu email válido
-    - `SUA_SENHA_AQUI` → sua senha válida
-
-```javascript
-login() {
-    const email = "seu-email@exemplo.com";  // ← Adicione seu email aqui
-    const password = "sua-senha";           // ← Adicione sua senha aqui
-
-    // ... resto do código
-}
-```
-
-⚠️ **Atenção:** Nunca faça commit de credenciais reais no repositório. Use variáveis de ambiente ou arquivos de configuração locais (não versionados).
-
-### 🔒 Configurar GitHub Secrets (Para CI/CD)
-
-Para que os testes sejam executados no GitHub Actions e o relatório seja gerado automaticamente, é necessário configurar os **GitHub Secrets** com as credenciais de login.
-
-**Como configurar:**
-
-1. Acesse o repositório no GitHub
-2. Vá em **Settings → Secrets and variables → Actions**
-3. Clique em **"New repository secret"**
-4. Adicione os seguintes secrets:
-
-    - **Nome:** `TEST_USER`
-
-        - **Valor:** Seu email válido para login
-
-    - **Nome:** `TEST_PASSWORD`
-        - **Valor:** Sua senha válida para login
-
-5. Clique em **"Add secret"** para cada um
-
 ---
 
 ## 🏗️ Estrutura do Projeto
@@ -187,16 +144,6 @@ O relatório será gerado em: `mochawesome-html/mochawesome.html`
 
 O workflow executa automaticamente em push/PR na `main`, schedule diário (06:00 UTC) e manualmente. Executa os testes, gera o relatório Mochawesome e publica no GitHub Pages.
 
-⚠️ **Requisito:** Configure os GitHub Secrets (`TEST_USER` e `TEST_PASSWORD`) conforme a seção [Configuração Inicial](#-configuração-inicial).
-
-### Publicar Relatório no GitHub Pages
-
-**Para ativar:**
-
-1. Vá em **Settings → Pages** no repositório
-2. Selecione **"Deploy from a branch"** → Branch: `gh-pages` → Root: `/ (root)`
-3. O workflow publica automaticamente na branch `gh-pages` após cada execução
-
 O relatório estará disponível em:
 `https://johnmsousa.github.io/Teste_VDE_QA_JohnSousa/`
 
@@ -208,7 +155,6 @@ Principais configurações em `cypress.config.js`:
 
 -   `baseUrl`: https://betaconcursos.metodovde.com.br
 -   `viewportWidth`: 1280px / `viewportHeight`: 720px
--   `defaultCommandTimeout`: 10000ms
 -   `video`: false / `screenshotOnRunFailure`: true
 
 ---
@@ -262,8 +208,6 @@ Cypress.Commands.add("meuComando", (parametro) => {
 3. ✅ Use asserções claras e específicas
 4. ✅ Mantenha os testes organizados e legíveis
 5. ✅ Utilize testes data-driven para validar múltiplos cenários
-6. ✅ Sempre limpe dados criados nos testes
-7. ✅ Nunca faça commit de credenciais reais
 
 ---
 
@@ -282,7 +226,8 @@ Cypress.Commands.add("meuComando", (parametro) => {
 
 1. **Testes falhando por timeout**
 
-    - Solução: Aumente o `defaultCommandTimeout` no `cypress.config.js`
+    - Verifique se há elementos que precisam de mais tempo para carregar
+    - Use `cy.wait()` ou aumente timeouts específicos nos comandos quando necessário
 
 2. **Elementos não encontrados**
 

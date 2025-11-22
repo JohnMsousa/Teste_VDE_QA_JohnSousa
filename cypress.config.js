@@ -8,9 +8,6 @@ module.exports = defineConfig({
         video: false,
         videosFolder: "cypress/videos",
         screenshotOnRunFailure: true,
-        defaultCommandTimeout: 10000,
-        requestTimeout: 10000,
-        responseTimeout: 10000,
         experimentalStudio: true,
         setupNodeEvents(on, config) {
             // implement node event listeners here

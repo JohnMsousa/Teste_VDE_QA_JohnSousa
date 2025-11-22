@@ -1,137 +1,58 @@
-name: CI - Testes e Relatórios
+name: Testes VDE
 
-on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
-    schedule:
-        - cron: "0 9 * * *" # Todos os dias às 06:00 (horário de Brasília)
-    workflow_dispatch:
+on: 
+  pull_request:
+    branches: 
+      - main
+  schedule:
+    - cron: "0 9 * * *" # 06:00 da manhã horário de Brasília
+  workflow_dispatch:
 
 jobs:
-    cypress-tests:
-        name: Executar Cypress e Publicar Relatório
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
-            pages: write
-            id-token: write
+  cypress-tests:
+    name: Run Cypress and Publish Report
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
-        steps:
-            - name: Checkout repositório
-              uses: actions/checkout@v4
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "18"
-                  cache: "npm"
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
 
-            - name: Instalar dependências
-              run: |
-                  if [ -f "package-lock.json" ]; then
-                      npm ci
-                  else
-                      npm install
-                  fi
+    - name: Install dependencies
+      run: |
+        if [ -f "package-lock.json" ]; then
+            npm ci
+        else
+            npm install
+        fi
 
-            - name: Executar testes Cypress
-              run: npx cypress run || true
-              continue-on-error: true
+    # Executa com CHROME
+    - name: Run Cypress tests (Chrome)
+      run: npx cypress run --browser chrome
 
-            - name: Verificar arquivos gerados
-              if: always()
-              run: |
-                  echo "=== Verificando estrutura de diretórios ==="
-                  find cypress -name "*.json" -type f 2>/dev/null | head -20 || echo "Nenhum JSON encontrado"
-                  find cypress -name "*.html" -type f 2>/dev/null | head -20 || echo "Nenhum HTML encontrado"
-                  echo "=== Conteúdo de cypress/reports ==="
-                  ls -la cypress/reports/ 2>/dev/null || echo "Diretório reports não existe"
+    - name: Generate HTML Report
+      run: |
+        mkdir -p mochawesome-html
 
-            - name: Gerar relatório HTML
-              if: always()
-              run: |
-                  mkdir -p cypress/reports
-                  mkdir -p public
-                  
-                  # Procurar arquivos JSON em diferentes locais
-                  JSON_FILES=$(find cypress/reports -name "*.json" -type f 2>/dev/null || echo "")
-                  
-                  if [ -z "$JSON_FILES" ]; then
-                      echo "Nenhum arquivo JSON encontrado em cypress/reports"
-                      echo "Procurando em outros locais..."
-                      JSON_FILES=$(find . -name "mochawesome*.json" -type f 2>/dev/null || echo "")
-                  fi
-                  
-                  if [ ! -z "$JSON_FILES" ]; then
-                      echo "Arquivos JSON encontrados:"
-                      echo "$JSON_FILES"
-                      
-                      # Contar quantos JSONs temos
-                      JSON_COUNT=$(find cypress/reports -name "*.json" -type f 2>/dev/null | wc -l || echo "0")
-                      echo "Total de arquivos JSON: $JSON_COUNT"
-                      
-                      if [ "$JSON_COUNT" -eq "1" ]; then
-                          # Se houver apenas 1 arquivo, usar diretamente
-                          SINGLE_JSON=$(find cypress/reports -name "*.json" -type f | head -1)
-                          cp "$SINGLE_JSON" cypress/reports/report.json
-                          echo "Usando arquivo único: $SINGLE_JSON"
-                      else
-                          # Merge dos JSONs
-                          JSON_PATTERN="cypress/reports/*.json"
-                          if ls $JSON_PATTERN 1> /dev/null 2>&1; then
-                              npx mochawesome-merge $JSON_PATTERN -o cypress/reports/report.json
-                          else
-                              JSON_LIST=$(find cypress/reports -name "*.json" -type f | tr '\n' ' ')
-                              npx mochawesome-merge $JSON_LIST -o cypress/reports/report.json
-                          fi
-                      fi
-                      
-                      # Gerar HTML
-                      if [ -f "cypress/reports/report.json" ]; then
-                          echo "Gerando HTML do relatório..."
-                          npx marge cypress/reports/report.json -f report -o cypress/reports || \
-                          npx mochawesome-report-generator cypress/reports/report.json -o cypress/reports || \
-                          npx marge cypress/reports/report.json -o cypress/reports
-                      fi
-                      
-                      # Procurar o HTML gerado
-                      if [ -f "cypress/reports/report.html" ]; then
-                          cp cypress/reports/report.html public/index.html
-                          echo "✓ Relatório copiado para public/index.html"
-                      elif [ -f "cypress/reports/mochawesome.html" ]; then
-                          cp cypress/reports/mochawesome.html public/index.html
-                          echo "✓ Relatório copiado de mochawesome.html"
-                      else
-                          # Procurar qualquer HTML gerado
-                          HTML_FILE=$(find cypress/reports -name "*.html" -type f 2>/dev/null | head -1)
-                          if [ ! -z "$HTML_FILE" ]; then
-                              cp "$HTML_FILE" public/index.html
-                              echo "✓ Relatório copiado de $HTML_FILE"
-                          else
-                              echo "✗ HTML não encontrado após geração"
-                              echo "<html><body><h1>Erro ao gerar relatório</h1><p>JSONs encontrados mas HTML não foi gerado.</p><p>Verifique os logs acima para mais detalhes.</p></body></html>" > public/index.html
-                          fi
-                      fi
-                  else
-                      echo "Nenhum arquivo JSON encontrado - criando relatório de fallback"
-                      echo "<html><body><h1>Relatório não disponível</h1><p>Nenhum teste foi executado ou não foram gerados relatórios.</p><p>Verifique os logs do workflow para mais detalhes.</p></body></html>" > public/index.html
-                  fi
+        # Merge JSONs
+        npx mochawesome-merge mochawesome-report/*.json > mochawesome.json
+        
+        # Gerar HTML
+        npx mochawesome-report-generator mochawesome.json -o mochawesome-html
 
-            - name: Upload relatório como artefato
-              if: always()
-              uses: actions/upload-artifact@v4
-              with:
-                  name: test-report
-                  path: cypress/reports/report.html
-                  retention-days: 30
-                  if-no-files-found: ignore
+        # Renomear para index.html
+        mv mochawesome-html/mochawesome.html mochawesome-html/index.html
 
-            - name: Publicar no GitHub Pages
-              if: always()
-              uses: peaceiris/actions-gh-pages@v4
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_dir: ./public
-                  keep_files: false
+    - name: Deploy GitHub Pages
+      if: always()
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: mochawesome-html

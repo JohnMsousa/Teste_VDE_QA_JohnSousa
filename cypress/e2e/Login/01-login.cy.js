@@ -30,7 +30,7 @@ describe("Página de Login - Beta Concursos", () => {
 
     it("deve exibir mensagem de senha incorreta", () => {
         LoginPage.visit();
-        LoginPage.preencherEmail("email-valido@exemplo.com");
+        LoginPage.preencherEmail("johnmsousasantos@gmail.com");
         LoginPage.clicarProximo();
         LoginPage.preencherSenha("senhaIncorreta123");
         LoginPage.clicarEntrar();

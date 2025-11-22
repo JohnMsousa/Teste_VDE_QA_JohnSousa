@@ -29,9 +29,8 @@ describe("Página de Login - Beta Concursos", () => {
     });
 
     it("deve exibir mensagem de senha incorreta", () => {
-        // ⚠️ IMPORTANTE: Use um email válido cadastrado na aplicação para este teste
         LoginPage.visit();
-        LoginPage.preencherEmail("email-valido@exemplo.com"); // ← Substitua por um email válido
+        LoginPage.preencherEmail("email-valido@exemplo.com");
         LoginPage.clicarProximo();
         LoginPage.preencherSenha("senhaIncorreta123");
         LoginPage.clicarEntrar();

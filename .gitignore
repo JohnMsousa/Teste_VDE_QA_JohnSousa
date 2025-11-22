@@ -8,6 +8,11 @@ cypress/screenshots/
 cypress/downloads/
 cypress/reports/
 
+# Mochawesome Reports
+mochawesome-report/
+mochawesome-html/
+mochawesome.json
+
 # OS
 .DS_Store
 Thumbs.db

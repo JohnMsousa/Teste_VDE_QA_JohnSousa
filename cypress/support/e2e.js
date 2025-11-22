@@ -1,31 +1,13 @@
-// ***********************************************************
-// This example support/e2e.js is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
+// Arquivo de suporte do Cypress - carregado automaticamente antes de cada teste
+// Configurações globais e comportamentos que modificam o Cypress
 
-// Import commands.js using ES2015 syntax:
-import './commands'
+// Importa comandos customizados (se necessário)
+import "./commands";
 
-// Import mochawesome reporter
-import 'cypress-mochawesome-reporter/register'
-
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
-
-// Hide fetch/XHR requests from command log
-Cypress.on('uncaught:exception', (err, runnable) => {
-  // returning false here prevents Cypress from
-  // failing the test
-  return false
-})
-
+// Tratamento de exceções JavaScript não capturadas
+// Previne que erros JS da aplicação interrompam os testes
+Cypress.on("uncaught:exception", (err, runnable) => {
+    // Retorna false para ignorar erros não capturados
+    // Isso evita que testes falhem por erros externos da aplicação
+    return false;
+});

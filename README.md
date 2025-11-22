@@ -6,8 +6,8 @@ Projeto de testes end-to-end (E2E) utilizando Cypress seguindo o padrão **Page 
 
 ## 📋 Pré-requisitos
 
-- Node.js (versão 14 ou superior)
-- npm ou yarn
+-   Node.js (versão 14 ou superior)
+-   npm ou yarn
 
 ## 🚀 Instalação
 
@@ -28,8 +28,7 @@ npm install
 │   │   ├── Cronograma/         # Testes de cronograma
 │   │   └── Questões/          # Testes de questões
 │   │       ├── 01-reponder-questao.cy.js
-│   │       ├── 02-filtrar-questao.cy.js
-│   │       └── 03-filtrar-questoes-data-driven.cy.js  # Teste data-driven
+│   │       └── 02-filtrar-questao.cy.js
 │   ├── fixtures/              # Dados de teste (JSON, etc)
 │   │   ├── example.json
 │   │   ├── loginData.json     # Dados para testes de login
@@ -55,10 +54,10 @@ npm install
 
 O projeto utiliza o padrão **Page Objects** para organizar os testes:
 
-- **BasePage**: Classe base com métodos comuns reutilizáveis
-- **Page Objects específicos**: Cada página/funcionalidade tem sua própria classe
-- **Encapsulamento**: Seletores e ações são encapsulados nas classes
-- **Reutilização**: Métodos podem ser reutilizados em múltiplos testes
+-   **BasePage**: Classe base com métodos comuns reutilizáveis
+-   **Page Objects específicos**: Cada página/funcionalidade tem sua própria classe
+-   **Encapsulamento**: Seletores e ações são encapsulados nas classes
+-   **Reutilização**: Métodos podem ser reutilizados em múltiplos testes
 
 ### Exemplo de uso:
 
@@ -107,7 +106,7 @@ npx cypress run --spec "cypress/e2e/Questões/**/*.cy.js"
 npx cypress run --spec "cypress/e2e/Cronograma/**/*.cy.js"
 
 # Executar um arquivo específico
-npx cypress run --spec "cypress/e2e/Questões/03-filtrar-questoes-data-driven.cy.js"
+npx cypress run --spec "cypress/e2e/Questões/02-filtrar-questao.cy.js"
 ```
 
 ### Gerar relatório com Mochawesome:
@@ -116,60 +115,53 @@ npx cypress run --spec "cypress/e2e/Questões/03-filtrar-questoes-data-driven.cy
 npm run cy:report
 ```
 
-Este comando executa todos os testes e gera um relatório HTML completo em `cypress/reports/report.html` com:
-- Estatísticas de execução
-- Detalhes de cada teste
-- Screenshots de falhas
-- Tempo de execução
-- Status de cada teste
+Este comando executa todos os testes e gera um relatório HTML completo em `mochawesome-html/mochawesome.html` com:
+
+-   Estatísticas de execução
+-   Detalhes de cada teste
+-   Screenshots de falhas
+-   Tempo de execução
+-   Status de cada teste
 
 ### Publicar relatório no GitHub Pages:
 
-O workflow do GitHub Actions executa automaticamente quando há push na branch `main`:
-- Executa todos os testes
-- Gera o relatório Mochawesome
-- Publica automaticamente no GitHub Pages
+O workflow do GitHub Actions executa automaticamente quando há:
+
+-   Push na branch `main`
+-   Pull requests para a branch `main`
+-   Schedule diário às 06:00 UTC
+-   Execução manual (workflow_dispatch)
+-   Executa todos os testes
+-   Gera o relatório Mochawesome
+-   Publica automaticamente no GitHub Pages
 
 O relatório estará disponível em:
 `https://johnmsousa.github.io/Teste_VDE_QA_JohnSousa/`
 
 **Para ativar:**
+
 1. Vá em Settings → Pages no repositório
-2. Selecione "GitHub Actions" como source
-3. Faça push na branch `main` e o workflow executará automaticamente
+2. Selecione "Deploy from a branch" → Branch: `gh-pages` → Root: `/ (root)`
+3. O workflow publica automaticamente na branch `gh-pages` após cada execução
 
+## 📊 Testes
 
-## 📊 Testes Data-Driven
+O projeto inclui testes para diferentes funcionalidades:
 
-O projeto inclui testes data-driven que executam o mesmo cenário com múltiplos dados de entrada, reduzindo duplicação de código e facilitando manutenção.
+-   **Login**: Autenticação na aplicação
+-   **Questões**: Responder e filtrar questões
+-   **Cronograma**: Criar cronogramas base e personalizados
 
-**Exemplo:** `03-filtrar-questoes-data-driven.cy.js`
-
-Este teste valida o filtro de questões utilizando diferentes disciplinas:
-
-```javascript
-const disciplinas = [
-    { nome: "Administrativo", esperado: "Administrativo" },
-    { nome: "Constitucional", esperado: "Constitucional" },
-    { nome: "Tributário", esperado: "Tributário" }
-];
-
-disciplinas.forEach((disciplina) => {
-    it(`deve filtrar questões por disciplina: ${disciplina.nome}`, () => {
-        QuestoesPage.filtrarPorDisciplina(disciplina.nome);
-        QuestoesPage.verificarResultadosFiltro(disciplina.esperado);
-    });
-});
-```
+Os testes utilizam o padrão **Page Objects** para melhor organização e manutenibilidade.
 
 ## ⚙️ Configuração
 
 O arquivo `cypress.config.js` está configurado com:
 
-- `baseUrl`: https://betaconcursos.metodovde.com.br
-- `viewportWidth`: 1280px
-- `viewportHeight`: 720px
-- `defaultCommandTimeout`: 10000ms
+-   `baseUrl`: https://betaconcursos.metodovde.com.br
+-   `viewportWidth`: 1280px
+-   `viewportHeight`: 720px
+-   `defaultCommandTimeout`: 10000ms
 
 Para ajustar outras configurações, edite o arquivo `cypress.config.js`.
 
@@ -201,7 +193,7 @@ Cypress.Commands.add("meuComando", (parametro) => {
 
 ## 📦 Dependências
 
-- **cypress**: ^14.5.4 - Framework de testes E2E
+-   **cypress**: ^14.5.4 - Framework de testes E2E
 
 ## 🐛 Troubleshooting
 
@@ -214,4 +206,3 @@ Cypress.Commands.add("meuComando", (parametro) => {
 ## 👤 Autor
 
 John Sousa - Teste Técnico QA Pleno
-

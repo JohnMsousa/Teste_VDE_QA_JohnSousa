@@ -1,30 +1,29 @@
 {
-  "name": "teste-vde-qa-johnsousa",
-  "version": "1.0.0",
-  "description": "Projeto de testes automatizados com Cypress - Teste Técnico QA Pleno",
-  "main": "index.js",
-  "scripts": {
-    "cy:open": "cypress open",
-    "cy:run": "cypress run",
-    "cy:run:chrome": "cypress run --browser chrome",
-    "cy:run:firefox": "cypress run --browser firefox",
-    "cy:run:edge": "cypress run --browser edge",
-    "cy:run:headless": "cypress run --headless",
-    "cy:report": "cypress run && npx mochawesome-merge cypress/reports/*.json -o cypress/reports/report.json && npx marge cypress/reports/report.json -f report -o cypress/reports"
-  },
-  "keywords": [
-    "cypress",
-    "e2e",
-    "testing",
-    "qa"
-  ],
-  "author": "John Sousa",
-  "license": "ISC",
-  "devDependencies": {
-    "cypress": "^14.5.4",
-    "cypress-mochawesome-reporter": "^3.8.4",
-    "mochawesome": "^7.1.4",
-    "mochawesome-merge": "^4.4.1",
-    "mochawesome-report-generator": "^6.3.2"
-  }
+    "name": "teste-vde-qa-johnsousa",
+    "version": "1.0.0",
+    "description": "Projeto de testes automatizados com Cypress - Teste Técnico QA Pleno",
+    "main": "index.js",
+    "scripts": {
+        "cy:open": "cypress open",
+        "cy:run": "cypress run",
+        "cy:run:chrome": "cypress run --browser chrome",
+        "cy:run:firefox": "cypress run --browser firefox",
+        "cy:run:edge": "cypress run --browser edge",
+        "cy:run:headless": "cypress run --headless",
+        "cy:report": "cypress run && npx mochawesome-merge mochawesome-report/*.json > mochawesome.json && npx mochawesome-report-generator mochawesome.json -o mochawesome-html"
+    },
+    "keywords": [
+        "cypress",
+        "e2e",
+        "testing",
+        "qa"
+    ],
+    "author": "John Sousa",
+    "license": "ISC",
+    "devDependencies": {
+        "cypress": "^14.5.4",
+        "mochawesome": "^7.1.4",
+        "mochawesome-merge": "^4.4.1",
+        "mochawesome-report-generator": "^6.3.2"
+    }
 }

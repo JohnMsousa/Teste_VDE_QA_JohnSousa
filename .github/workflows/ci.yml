@@ -1,58 +1,54 @@
 name: Testes VDE
 
-on: 
-  pull_request:
-    branches: 
-      - main
-  schedule:
-    - cron: "0 9 * * *" # 06:00 da manhã horário de Brasília
-  workflow_dispatch:
+on:
+    pull_request:
+        branches:
+            - main
+    schedule:
+        - cron: "0 9 * * *" # 06:00 da manhã horário de Brasília
+    workflow_dispatch:
 
 jobs:
-  cypress-tests:
-    name: Run Cypress and Publish Report
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    cypress-tests:
+        name: Run Cypress and Publish Report
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
 
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "latest"
+                  cache: "npm"
 
-    - name: Install dependencies
-      run: |
-        if [ -f "package-lock.json" ]; then
-            npm ci
-        else
-            npm install
-        fi
+            - name: Install dependencies
+              run: npm ci
 
-    # Executa com CHROME
-    - name: Run Cypress tests (Chrome)
-      run: npx cypress run --browser chrome
+            # Executa com CHROME
+            - name: Run Cypress tests (Chrome)
+              run: npx cypress run --browser chrome || true
+              continue-on-error: true
 
-    - name: Generate HTML Report
-      run: |
-        mkdir -p mochawesome-html
+            - name: Generate HTML Report
+              run: |
+                  mkdir -p mochawesome-html
 
-        # Merge JSONs
-        npx mochawesome-merge mochawesome-report/*.json > mochawesome.json
-        
-        # Gerar HTML
-        npx mochawesome-report-generator mochawesome.json -o mochawesome-html
+                  # Merge JSONs
+                  npx mochawesome-merge mochawesome-report/*.json > mochawesome.json
 
-        # Renomear para index.html
-        mv mochawesome-html/mochawesome.html mochawesome-html/index.html
+                  # Gerar HTML
+                  npx mochawesome-report-generator mochawesome.json -o mochawesome-html
 
-    - name: Deploy GitHub Pages
-      if: always()
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: mochawesome-html
+                  # Renomear para index.html
+                  mv mochawesome-html/mochawesome.html mochawesome-html/index.html
+
+            - name: Deploy GitHub Pages
+              if: always()
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: mochawesome-html

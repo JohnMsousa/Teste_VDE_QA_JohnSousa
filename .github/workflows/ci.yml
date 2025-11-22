@@ -33,7 +33,10 @@ jobs:
               run: npm install
 
             - name: Run Cypress tests with Chrome
-              run: npx cypress run --browser chrome || true
+              env:
+                  CYPRESS_TEST_USER: ${{ secrets.TEST_USER }}
+                  CYPRESS_TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+              run: npx cypress run --browser chrome --env TEST_USER=$CYPRESS_TEST_USER,TEST_PASSWORD=$CYPRESS_TEST_PASSWORD || true
               continue-on-error: true
 
             - name: Generate HTML Report

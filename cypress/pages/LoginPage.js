@@ -7,8 +7,8 @@ export class LoginPage extends BasePage {
     }
 
     login() {
-        const email = Cypress.env("TEST_USER") || "SEU_EMAIL_AQUI@exemplo.com";
-        const password = Cypress.env("TEST_PASSWORD") || "SUA_SENHA_AQUI";
+        const email = Cypress.env("TEST_USER"); // SEU_EMAIL_AQUI@exemplo.com <--
+        const password = Cypress.env("TEST_PASSWORD"); // SUA_SENHA_AQUI <--
 
         cy.get("[type='email']").type(email);
         cy.contains("button", "Próximo").click();

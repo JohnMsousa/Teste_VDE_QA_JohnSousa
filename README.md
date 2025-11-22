@@ -131,7 +131,7 @@ O workflow do GitHub Actions executa automaticamente quando há push na branch `
 - Publica automaticamente no GitHub Pages
 
 O relatório estará disponível em:
-`https://[seu-usuario].github.io/[nome-do-repositorio]/`
+`https://johnmsousa.github.io/Teste_VDE_QA_JohnSousa/`
 
 **Para ativar:**
 1. Vá em Settings → Pages no repositório
@@ -215,6 +215,3 @@ Cypress.Commands.add("meuComando", (parametro) => {
 
 John Sousa - Teste Técnico QA Pleno
 
-## 📄 Licença
-
-ISC

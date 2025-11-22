@@ -5,14 +5,17 @@ on:
         branches: [main]
     pull_request:
         branches: [main]
+    schedule:
+        - cron: "0 9 * * *" # Todos os dias às 06:00 (horário de Brasília)
     workflow_dispatch:
 
 jobs:
-    test:
+    cypress-tests:
+        name: Executar Cypress e Publicar Relatório
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout código
+            - name: Checkout repositório
               uses: actions/checkout@v4
 
             - name: Setup Node.js
@@ -25,18 +28,30 @@ jobs:
               run: npm ci
 
             - name: Executar testes Cypress
-              run: npm run cy:run
+              run: npx cypress run
               continue-on-error: true
 
-            - name: Gerar relatório Mochawesome
+            - name: Gerar relatório HTML
               if: always()
               run: |
                   mkdir -p cypress/reports
                   if ls cypress/reports/*.json 1> /dev/null 2>&1; then
-                    npx mochawesome-merge cypress/reports/*.json -o cypress/reports/report.json
-                    npx marge cypress/reports/report.json -f report -o cypress/reports
+                      npx mochawesome-merge cypress/reports/*.json -o cypress/reports/report.json
+                      npx marge cypress/reports/report.json -f report -o cypress/reports
                   else
-                    echo "Nenhum relatório JSON encontrado"
+                      echo "Nenhum relatório JSON encontrado"
+                      mkdir -p cypress/reports
+                      echo "<html><body><h1>Relatório não disponível</h1><p>Nenhum teste foi executado ou não foram gerados relatórios.</p></body></html>" > cypress/reports/report.html
+                  fi
+
+            - name: Renomear relatório para index.html
+              if: always()
+              run: |
+                  mkdir -p public
+                  if [ -f "cypress/reports/report.html" ]; then
+                      cp cypress/reports/report.html public/index.html
+                  else
+                      echo "<html><body><h1>Relatório não disponível</h1><p>Execute os testes para gerar o relatório.</p></body></html>" > public/index.html
                   fi
 
             - name: Upload relatório como artefato
@@ -48,18 +63,8 @@ jobs:
                   retention-days: 30
                   if-no-files-found: ignore
 
-            - name: Preparar relatório para GitHub Pages
-              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-              run: |
-                  mkdir -p public
-                  if [ -f "cypress/reports/report.html" ]; then
-                    cp cypress/reports/report.html public/index.html
-                  else
-                    echo "<html><body><h1>Relatório não disponível</h1><p>Execute os testes para gerar o relatório.</p></body></html>" > public/index.html
-                  fi
-
             - name: Publicar no GitHub Pages
-              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+              if: always()
               uses: peaceiris/actions-gh-pages@v4
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}

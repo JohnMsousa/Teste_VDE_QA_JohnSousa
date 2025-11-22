@@ -110,6 +110,34 @@ npx cypress run --spec "cypress/e2e/Cronograma/**/*.cy.js"
 npx cypress run --spec "cypress/e2e/Questões/03-filtrar-questoes-data-driven.cy.js"
 ```
 
+### Gerar relatório com Mochawesome:
+
+```bash
+npm run cy:report
+```
+
+Este comando executa todos os testes e gera um relatório HTML completo em `cypress/reports/report.html` com:
+- Estatísticas de execução
+- Detalhes de cada teste
+- Screenshots de falhas
+- Tempo de execução
+- Status de cada teste
+
+### Publicar relatório no GitHub Pages:
+
+O workflow do GitHub Actions executa automaticamente quando há push na branch `main`:
+- Executa todos os testes
+- Gera o relatório Mochawesome
+- Publica automaticamente no GitHub Pages
+
+O relatório estará disponível em:
+`https://[seu-usuario].github.io/[nome-do-repositorio]/`
+
+**Para ativar:**
+1. Vá em Settings → Pages no repositório
+2. Selecione "GitHub Actions" como source
+3. Faça push na branch `main` e o workflow executará automaticamente
+
 
 ## 📊 Testes Data-Driven
 

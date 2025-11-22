@@ -1,0 +1,67 @@
+name: CI - Testes e Relatórios
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout código
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "18"
+                  cache: "npm"
+
+            - name: Instalar dependências
+              run: npm ci
+
+            - name: Executar testes Cypress
+              run: npm run cy:run
+              continue-on-error: true
+
+            - name: Gerar relatório Mochawesome
+              if: always()
+              run: |
+                  mkdir -p cypress/reports
+                  if ls cypress/reports/*.json 1> /dev/null 2>&1; then
+                    npx mochawesome-merge cypress/reports/*.json -o cypress/reports/report.json
+                    npx marge cypress/reports/report.json -f report -o cypress/reports
+                  else
+                    echo "Nenhum relatório JSON encontrado"
+                  fi
+
+            - name: Upload relatório como artefato
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: test-report
+                  path: cypress/reports/report.html
+                  retention-days: 30
+                  if-no-files-found: ignore
+
+            - name: Preparar relatório para GitHub Pages
+              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+              run: |
+                  mkdir -p public
+                  if [ -f "cypress/reports/report.html" ]; then
+                    cp cypress/reports/report.html public/index.html
+                  else
+                    echo "<html><body><h1>Relatório não disponível</h1><p>Execute os testes para gerar o relatório.</p></body></html>" > public/index.html
+                  fi
+
+            - name: Publicar no GitHub Pages
+              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: ./public
+                  keep_files: false

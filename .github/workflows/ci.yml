@@ -13,6 +13,10 @@ jobs:
     cypress-tests:
         name: Executar Cypress e Publicar Relatório
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pages: write
+            id-token: write
 
         steps:
             - name: Checkout repositório
@@ -25,7 +29,12 @@ jobs:
                   cache: "npm"
 
             - name: Instalar dependências
-              run: npm ci
+              run: |
+                  if [ -f "package-lock.json" ]; then
+                      npm ci
+                  else
+                      npm install
+                  fi
 
             - name: Executar testes Cypress
               run: npx cypress run

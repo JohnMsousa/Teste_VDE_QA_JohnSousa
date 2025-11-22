@@ -67,19 +67,6 @@ Para que os testes sejam executados no GitHub Actions e o relatório seja gerado
 
 5. Clique em **"Add secret"** para cada um
 
-**Como funciona:**
-
--   O `LoginPage.js` está configurado para usar variáveis de ambiente quando disponíveis
--   No ambiente local, use os valores padrão no código
--   No GitHub Actions, os secrets são automaticamente injetados como variáveis de ambiente
--   Isso garante que as credenciais nunca sejam expostas no código ou nos logs
-
-```javascript
-// LoginPage.js usa automaticamente os secrets quando disponíveis
-const email = Cypress.env("TEST_USER") || "SEU_EMAIL_AQUI@exemplo.com";
-const password = Cypress.env("TEST_PASSWORD") || "SUA_SENHA_AQUI";
-```
-
 ---
 
 ## 🏗️ Estrutura do Projeto
@@ -156,12 +143,12 @@ Abre o Cypress Test Runner com interface gráfica:
 npm run cy:open
 ```
 
-### Modo Headless (Execução rápida)
-
-Executa todos os testes sem interface gráfica:
+### Modo Headless
 
 ```bash
 npm run cy:run:chrome    # Chrome
+npm run cy:run:firefox   # Firefox
+npm run cy:run:edge      # Edge
 ```
 
 ### Executar Testes Específicos
@@ -194,30 +181,13 @@ npm run cy:report
 
 O relatório será gerado em: `mochawesome-html/mochawesome.html`
 
-O relatório inclui:
-
--   ✅ Estatísticas de execução
--   📝 Detalhes de cada teste
--   📸 Screenshots de falhas
--   ⏱️ Tempo de execução
--   📈 Status de cada teste
-
 ---
 
 ## 🔄 CI/CD - GitHub Actions
 
-O projeto possui um workflow do GitHub Actions que:
+O workflow executa automaticamente em push/PR na `main`, schedule diário (06:00 UTC) e manualmente. Executa os testes, gera o relatório Mochawesome e publica no GitHub Pages.
 
--   ✅ Executa automaticamente em:
-    -   Push na branch `main`
-    -   Pull requests para a branch `main`
-    -   Schedule diário às 06:00 UTC
-    -   Execução manual (workflow_dispatch)
--   ✅ Executa todos os testes
--   ✅ Gera o relatório Mochawesome
--   ✅ Publica automaticamente no GitHub Pages
-
-⚠️ **Requisito:** Para que os testes sejam executados corretamente no CI/CD, é necessário configurar os **GitHub Secrets** (`TEST_USER` e `TEST_PASSWORD`) conforme descrito na seção [Configuração Inicial](#-configuração-inicial). Sem essas credenciais, os testes de login falharão e o relatório não será gerado corretamente.
+⚠️ **Requisito:** Configure os GitHub Secrets (`TEST_USER` e `TEST_PASSWORD`) conforme a seção [Configuração Inicial](#-configuração-inicial).
 
 ### Publicar Relatório no GitHub Pages
 
@@ -232,40 +202,14 @@ O relatório estará disponível em:
 
 ---
 
-## 📝 Testes Disponíveis
-
-O projeto inclui testes para as seguintes funcionalidades:
-
-### 🔐 Login
-
--   Autenticação na aplicação
--   Validação de campos
--   Mensagens de erro
-
-### 📚 Questões
-
--   Responder questões
--   Filtrar questões por disciplina (teste data-driven)
-
-### 📅 Cronograma
-
--   Criar cronograma base
--   Criar cronograma personalizado
-
----
-
 ## ⚙️ Configuração do Cypress
 
-O arquivo `cypress.config.js` está configurado com:
+Principais configurações em `cypress.config.js`:
 
 -   `baseUrl`: https://betaconcursos.metodovde.com.br
--   `viewportWidth`: 1280px
--   `viewportHeight`: 720px
+-   `viewportWidth`: 1280px / `viewportHeight`: 720px
 -   `defaultCommandTimeout`: 10000ms
--   `video`: false (vídeos desabilitados)
--   `screenshotOnRunFailure`: true (screenshots automáticos em falhas)
-
-Para ajustar outras configurações, edite o arquivo `cypress.config.js`.
+-   `video`: false / `screenshotOnRunFailure`: true
 
 ---
 
